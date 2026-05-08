@@ -49,7 +49,7 @@ export async function runWeatherCheck(): Promise<CheckSummary> {
         rainfall_mm: reading.rainfallMm,
         humidity: reading.humidity,
         wind_speed: reading.windSpeed,
-        raw: reading.raw as object,
+        raw: reading.raw as never,
       });
 
       // 2. Load applicable threshold rules: cluster-specific OR global/state-level.

@@ -22,13 +22,13 @@ export const Route = createFileRoute("/api/public/twilio/status")({
 
         const mapped = STATUS_MAP[rawStatus];
         if (!mapped) return new Response("ok"); // ignore non-final statuses
-        const patch: Record<string, unknown> = { status: mapped };
-        if (mapped === "delivered") patch.delivered_at = new Date().toISOString();
-        if (errorCode) patch.error = `Twilio code ${errorCode}`;
-
         await supabaseAdmin
           .from("alert_deliveries")
-          .update(patch)
+          .update({
+            status: mapped,
+            delivered_at: mapped === "delivered" ? new Date().toISOString() : null,
+            error: errorCode ? `Twilio code ${errorCode}` : null,
+          })
           .eq("provider_message_id", sid);
 
         return new Response("ok");
