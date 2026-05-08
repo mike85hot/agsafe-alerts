@@ -9,14 +9,73 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SignupRouteImport } from './routes/signup'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRulesRouteImport } from './routes/_authenticated/rules'
+import { Route as AuthenticatedMeRouteImport } from './routes/_authenticated/me'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedCronRouteImport } from './routes/_authenticated/cron'
+import { Route as AuthenticatedClustersRouteImport } from './routes/_authenticated/clusters'
+import { Route as AuthenticatedAlertsRouteImport } from './routes/_authenticated/alerts'
+import { Route as AuthenticatedClustersIdRouteImport } from './routes/_authenticated/clusters.$id'
 import { Route as ApiPublicTwilioStatusRouteImport } from './routes/api/public/twilio/status'
 import { Route as ApiPublicCronCheckWeatherRouteImport } from './routes/api/public/cron/check-weather'
 
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRoute = AuthenticatedRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRulesRoute = AuthenticatedRulesRouteImport.update({
+  id: '/rules',
+  path: '/rules',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedMeRoute = AuthenticatedMeRouteImport.update({
+  id: '/me',
+  path: '/me',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedCronRoute = AuthenticatedCronRouteImport.update({
+  id: '/cron',
+  path: '/cron',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedClustersRoute = AuthenticatedClustersRouteImport.update({
+  id: '/clusters',
+  path: '/clusters',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedAlertsRoute = AuthenticatedAlertsRouteImport.update({
+  id: '/alerts',
+  path: '/alerts',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedClustersIdRoute = AuthenticatedClustersIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AuthenticatedClustersRoute,
 } as any)
 const ApiPublicTwilioStatusRoute = ApiPublicTwilioStatusRouteImport.update({
   id: '/api/public/twilio/status',
@@ -32,17 +91,45 @@ const ApiPublicCronCheckWeatherRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/signup': typeof SignupRoute
+  '/alerts': typeof AuthenticatedAlertsRoute
+  '/clusters': typeof AuthenticatedClustersRouteWithChildren
+  '/cron': typeof AuthenticatedCronRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/me': typeof AuthenticatedMeRoute
+  '/rules': typeof AuthenticatedRulesRoute
+  '/clusters/$id': typeof AuthenticatedClustersIdRoute
   '/api/public/cron/check-weather': typeof ApiPublicCronCheckWeatherRoute
   '/api/public/twilio/status': typeof ApiPublicTwilioStatusRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/signup': typeof SignupRoute
+  '/alerts': typeof AuthenticatedAlertsRoute
+  '/clusters': typeof AuthenticatedClustersRouteWithChildren
+  '/cron': typeof AuthenticatedCronRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/me': typeof AuthenticatedMeRoute
+  '/rules': typeof AuthenticatedRulesRoute
+  '/clusters/$id': typeof AuthenticatedClustersIdRoute
   '/api/public/cron/check-weather': typeof ApiPublicCronCheckWeatherRoute
   '/api/public/twilio/status': typeof ApiPublicTwilioStatusRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteWithChildren
+  '/login': typeof LoginRoute
+  '/signup': typeof SignupRoute
+  '/_authenticated/alerts': typeof AuthenticatedAlertsRoute
+  '/_authenticated/clusters': typeof AuthenticatedClustersRouteWithChildren
+  '/_authenticated/cron': typeof AuthenticatedCronRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/me': typeof AuthenticatedMeRoute
+  '/_authenticated/rules': typeof AuthenticatedRulesRoute
+  '/_authenticated/clusters/$id': typeof AuthenticatedClustersIdRoute
   '/api/public/cron/check-weather': typeof ApiPublicCronCheckWeatherRoute
   '/api/public/twilio/status': typeof ApiPublicTwilioStatusRoute
 }
@@ -50,31 +137,135 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/login'
+    | '/signup'
+    | '/alerts'
+    | '/clusters'
+    | '/cron'
+    | '/dashboard'
+    | '/me'
+    | '/rules'
+    | '/clusters/$id'
     | '/api/public/cron/check-weather'
     | '/api/public/twilio/status'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/public/cron/check-weather' | '/api/public/twilio/status'
+  to:
+    | '/'
+    | '/login'
+    | '/signup'
+    | '/alerts'
+    | '/clusters'
+    | '/cron'
+    | '/dashboard'
+    | '/me'
+    | '/rules'
+    | '/clusters/$id'
+    | '/api/public/cron/check-weather'
+    | '/api/public/twilio/status'
   id:
     | '__root__'
     | '/'
+    | '/_authenticated'
+    | '/login'
+    | '/signup'
+    | '/_authenticated/alerts'
+    | '/_authenticated/clusters'
+    | '/_authenticated/cron'
+    | '/_authenticated/dashboard'
+    | '/_authenticated/me'
+    | '/_authenticated/rules'
+    | '/_authenticated/clusters/$id'
     | '/api/public/cron/check-weather'
     | '/api/public/twilio/status'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
+  LoginRoute: typeof LoginRoute
+  SignupRoute: typeof SignupRoute
   ApiPublicCronCheckWeatherRoute: typeof ApiPublicCronCheckWeatherRoute
   ApiPublicTwilioStatusRoute: typeof ApiPublicTwilioStatusRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/rules': {
+      id: '/_authenticated/rules'
+      path: '/rules'
+      fullPath: '/rules'
+      preLoaderRoute: typeof AuthenticatedRulesRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/me': {
+      id: '/_authenticated/me'
+      path: '/me'
+      fullPath: '/me'
+      preLoaderRoute: typeof AuthenticatedMeRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/cron': {
+      id: '/_authenticated/cron'
+      path: '/cron'
+      fullPath: '/cron'
+      preLoaderRoute: typeof AuthenticatedCronRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/clusters': {
+      id: '/_authenticated/clusters'
+      path: '/clusters'
+      fullPath: '/clusters'
+      preLoaderRoute: typeof AuthenticatedClustersRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/alerts': {
+      id: '/_authenticated/alerts'
+      path: '/alerts'
+      fullPath: '/alerts'
+      preLoaderRoute: typeof AuthenticatedAlertsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/clusters/$id': {
+      id: '/_authenticated/clusters/$id'
+      path: '/$id'
+      fullPath: '/clusters/$id'
+      preLoaderRoute: typeof AuthenticatedClustersIdRouteImport
+      parentRoute: typeof AuthenticatedClustersRoute
     }
     '/api/public/twilio/status': {
       id: '/api/public/twilio/status'
@@ -93,11 +284,59 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedClustersRouteChildren {
+  AuthenticatedClustersIdRoute: typeof AuthenticatedClustersIdRoute
+}
+
+const AuthenticatedClustersRouteChildren: AuthenticatedClustersRouteChildren = {
+  AuthenticatedClustersIdRoute: AuthenticatedClustersIdRoute,
+}
+
+const AuthenticatedClustersRouteWithChildren =
+  AuthenticatedClustersRoute._addFileChildren(
+    AuthenticatedClustersRouteChildren,
+  )
+
+interface AuthenticatedRouteChildren {
+  AuthenticatedAlertsRoute: typeof AuthenticatedAlertsRoute
+  AuthenticatedClustersRoute: typeof AuthenticatedClustersRouteWithChildren
+  AuthenticatedCronRoute: typeof AuthenticatedCronRoute
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedMeRoute: typeof AuthenticatedMeRoute
+  AuthenticatedRulesRoute: typeof AuthenticatedRulesRoute
+}
+
+const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedAlertsRoute: AuthenticatedAlertsRoute,
+  AuthenticatedClustersRoute: AuthenticatedClustersRouteWithChildren,
+  AuthenticatedCronRoute: AuthenticatedCronRoute,
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedMeRoute: AuthenticatedMeRoute,
+  AuthenticatedRulesRoute: AuthenticatedRulesRoute,
+}
+
+const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
+  AuthenticatedRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRoute: AuthenticatedRouteWithChildren,
+  LoginRoute: LoginRoute,
+  SignupRoute: SignupRoute,
   ApiPublicCronCheckWeatherRoute: ApiPublicCronCheckWeatherRoute,
   ApiPublicTwilioStatusRoute: ApiPublicTwilioStatusRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
