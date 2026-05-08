@@ -10,33 +10,61 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiPublicTwilioStatusRouteImport } from './routes/api/public/twilio/status'
+import { Route as ApiPublicCronCheckWeatherRouteImport } from './routes/api/public/cron/check-weather'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicTwilioStatusRoute = ApiPublicTwilioStatusRouteImport.update({
+  id: '/api/public/twilio/status',
+  path: '/api/public/twilio/status',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicCronCheckWeatherRoute =
+  ApiPublicCronCheckWeatherRouteImport.update({
+    id: '/api/public/cron/check-weather',
+    path: '/api/public/cron/check-weather',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/api/public/cron/check-weather': typeof ApiPublicCronCheckWeatherRoute
+  '/api/public/twilio/status': typeof ApiPublicTwilioStatusRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/api/public/cron/check-weather': typeof ApiPublicCronCheckWeatherRoute
+  '/api/public/twilio/status': typeof ApiPublicTwilioStatusRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/api/public/cron/check-weather': typeof ApiPublicCronCheckWeatherRoute
+  '/api/public/twilio/status': typeof ApiPublicTwilioStatusRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/api/public/cron/check-weather'
+    | '/api/public/twilio/status'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/api/public/cron/check-weather' | '/api/public/twilio/status'
+  id:
+    | '__root__'
+    | '/'
+    | '/api/public/cron/check-weather'
+    | '/api/public/twilio/status'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ApiPublicCronCheckWeatherRoute: typeof ApiPublicCronCheckWeatherRoute
+  ApiPublicTwilioStatusRoute: typeof ApiPublicTwilioStatusRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +76,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/twilio/status': {
+      id: '/api/public/twilio/status'
+      path: '/api/public/twilio/status'
+      fullPath: '/api/public/twilio/status'
+      preLoaderRoute: typeof ApiPublicTwilioStatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/cron/check-weather': {
+      id: '/api/public/cron/check-weather'
+      path: '/api/public/cron/check-weather'
+      fullPath: '/api/public/cron/check-weather'
+      preLoaderRoute: typeof ApiPublicCronCheckWeatherRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ApiPublicCronCheckWeatherRoute: ApiPublicCronCheckWeatherRoute,
+  ApiPublicTwilioStatusRoute: ApiPublicTwilioStatusRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
