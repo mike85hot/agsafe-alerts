@@ -2,7 +2,19 @@
 // SECURITY: server-only. Uses the admin client to write across all clusters.
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { getWeatherProvider } from "./weather.server";
-import { getSmsProvider } from "./sms.server";
+import { sendSmsWithFallback } from "./sms.server";
+import type { Language } from "./types";
+
+// Picks the SMS body in the farmer's preferred language, falling back to English.
+function pickTemplate(
+  rule: { template_en: string; template_ha: string | null; template_yo: string | null; template_pcm: string | null },
+  lang: Language,
+): string {
+  if (lang === "ha" && rule.template_ha) return rule.template_ha;
+  if (lang === "yo" && rule.template_yo) return rule.template_yo;
+  if (lang === "pcm" && rule.template_pcm) return rule.template_pcm;
+  return rule.template_en;
+}
 
 const SUPPRESSION_HOURS = 48;
 
