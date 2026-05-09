@@ -2,7 +2,19 @@
 // SECURITY: server-only. Uses the admin client to write across all clusters.
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { getWeatherProvider } from "./weather.server";
-import { getSmsProvider } from "./sms.server";
+import { sendSmsWithFallback } from "./sms.server";
+import type { Language } from "./types";
+
+// Picks the SMS body in the farmer's preferred language, falling back to English.
+function pickTemplate(
+  rule: { template_en: string; template_ha: string | null; template_yo: string | null; template_pcm: string | null },
+  lang: Language,
+): string {
+  if (lang === "ha" && rule.template_ha) return rule.template_ha;
+  if (lang === "yo" && rule.template_yo) return rule.template_yo;
+  if (lang === "pcm" && rule.template_pcm) return rule.template_pcm;
+  return rule.template_en;
+}
 
 const SUPPRESSION_HOURS = 48;
 
@@ -28,7 +40,6 @@ export async function runWeatherCheck(): Promise<CheckSummary> {
     .single();
 
   const weather = getWeatherProvider();
-  const sms = getSmsProvider();
 
   const { data: clusters, error: clustersErr } = await supabaseAdmin
     .from("clusters")
@@ -105,22 +116,23 @@ export async function runWeatherCheck(): Promise<CheckSummary> {
         }
         alertsTriggered++;
 
-        // 5. Fan out to farmers in this cluster (skip opted-out).
+        // 5. Fan out to farmers in this cluster (skip opted-out). Use language template + provider fallback.
         const { data: farmers } = await supabaseAdmin
           .from("farmers")
-          .select("id, phone")
+          .select("id, phone, language")
           .eq("cluster_id", cluster.id)
           .eq("opted_out", false);
 
         for (const farmer of farmers ?? []) {
-          const result = await sms.send(farmer.phone, rule.template_en);
+          const body = pickTemplate(rule, (farmer.language ?? "en") as Language);
+          const result = await sendSmsWithFallback(farmer.phone, body);
           deliveriesQueued++;
           await supabaseAdmin.from("alert_deliveries").insert({
             alert_id: event.id,
             farmer_id: farmer.id,
             phone: farmer.phone,
             status: result.success ? "sent" : "failed",
-            provider: sms.name,
+            provider: result.provider,
             provider_message_id: result.providerMessageId ?? null,
             error: result.error ?? null,
             attempts: 1,
@@ -146,9 +158,10 @@ export async function runWeatherCheck(): Promise<CheckSummary> {
     const { data: ev } = await supabaseAdmin
       .from("alert_events").select("message").eq("id", d.alert_id).single();
     if (!ev) continue;
-    const result = await sms.send(d.phone, ev.message);
+    const result = await sendSmsWithFallback(d.phone, ev.message);
     await supabaseAdmin.from("alert_deliveries").update({
       status: result.success ? "sent" : "failed",
+      provider: result.provider,
       provider_message_id: result.providerMessageId ?? null,
       error: result.error ?? null,
       attempts: (d.attempts ?? 1) + 1,
