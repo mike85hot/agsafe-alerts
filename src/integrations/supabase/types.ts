@@ -215,6 +215,7 @@ export type Database = {
           created_at: string
           full_name: string
           id: string
+          language: string
           opted_out: boolean
           phone: string
           updated_at: string
@@ -225,6 +226,7 @@ export type Database = {
           created_at?: string
           full_name: string
           id?: string
+          language?: string
           opted_out?: boolean
           phone: string
           updated_at?: string
@@ -235,6 +237,7 @@ export type Database = {
           created_at?: string
           full_name?: string
           id?: string
+          language?: string
           opted_out?: boolean
           phone?: string
           updated_at?: string
