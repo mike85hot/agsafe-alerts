@@ -1,0 +1,6 @@
+[build]
+  command = "vite build --config vite.config.netlify.ts"
+  publish = "dist/client"
+
+[build.environment]
+  NODE_VERSION = "20"
